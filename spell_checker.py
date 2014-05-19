@@ -31,8 +31,13 @@
 # http://boards.greenhouse.io/tests/4f6b4d24110c84b562c0cd84aa402614
 
 
-import itertools, sys, spell_ruiner
+import itertools
 
+from sys import argv
+
+test_words = []
+if len(argv) == 2:
+	test_words = list(open(argv[1], 'r'))
 
 def make_dictionary():
 	''' make our dictionary '''
@@ -51,7 +56,7 @@ def make_dictionary():
 		line = line.split()
 		key = line[2]
 		value = line[1]
-		dictionary.setdefault(key, 0) 
+		dictionary.setdefault(key, 0)
 		dictionary[key] += int(value)
 	frequency.close()
 
@@ -79,22 +84,14 @@ def doublify_letters(word):
 
 def get_alt_spellings(word):
 	''' return a set of alternate spellings based on a key of common replacements '''
-	list_of_alts = []
 	word = list(word)
 	lookup = {
-		'a': ['a','e','o','i'],
-		'e': ['e','ee','a','i'],
-		'i': ['i','a','y','e'],
-		'o': ['o','u','a'],
-		'u': ['u','o'],
-		'y': ['y','i'],
-		's': ['s', 'ss', 'c'],
-		't': ['t','tt'],
-		'f': ['f','ff'],
-		'l': ['l', 'll'],
-		'm': ['m', 'mm'],
-		'r': ['r', 'rr'],
-		'p': ['p', 'pp']
+		'a': ['i','o','e','a'],
+		'e': ['i','a','ee','e', 'o'],
+		'i': ['e','y','a','i'],
+		'o': ['a','u','oo','o', 'e'],
+		'u': ['o','u'],
+		'y': ['i','y']
 	}
 	to_permutate = []
 	for letter in word:
@@ -116,41 +113,35 @@ def spellcheck(word):
 
 	else:
 		word = word.lower()
-		print word
 		if word not in dictionary:
-			word = doublify_letters(word)
-			print word
+			word = doublify_letters(word) # so sheeeeeeep -> sheep
 		if word not in dictionary:
 			alt_words = get_alt_spellings(word)
 			word = uniquify_letters(word)
-			print word
 			alt_words = alt_words.union(get_alt_spellings(word)) # so peeeple -> people
-			print alt_words
 			real_words = alt_words.intersection(dictionary)
 			candidates = dict.fromkeys(real_words)
 			for key in candidates:
 				candidates[key] = dictionary[key]
-			print candidates
 			if candidates != []:
 				for word in candidates:
-					# print word
 					word = max(candidates, key=candidates.get)
-				
+
 		if word not in dictionary:
 			return "NO SUGGESTION"
 
 		else:
 			return "Did you mean: "+ word
 
-
-def test():
-	print spellcheck(spell_ruiner.generate_garbage())
-
 dictionary = make_dictionary()
 
-while True:
-	word = raw_input("Word to check: ")
+if test_words != []:
+	for word in test_words:
+		print "checking: " + word,
+		print spellcheck(word.strip())
 
-	print spellcheck(word)
-
+else:
+	while True:
+		word = raw_input("Word to check: ")
+		print spellcheck(word)
 

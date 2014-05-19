@@ -2,8 +2,16 @@
 
 import random, sys
 
-dictionary = list(open('words.txt', 'r')) # from /usr/share/dict/words
+script, iterations = sys.argv
 
+dictionary = []
+word_stream = open('word_frequency.txt', 'r') # from http://jbauman.com/gsl.html
+
+for line in word_stream:
+	line = line.split()
+	word = line[2]
+	dictionary.append(word)
+word_stream.close()
 
 lookup = {
 	'a': ['a','e','o','i'],
@@ -16,7 +24,7 @@ lookup = {
 
 def duplicate_letters(word):
 	rand_index = random.randint(0, len(word) - 1)
-	no_of_duplications = random.randint(2,10)
+	no_of_duplications = random.randint(1,5)
 	return word[:rand_index] + (word[rand_index] * no_of_duplications) + word[(rand_index + 1) :]
 
 def capitalize_letters(word):
@@ -35,9 +43,10 @@ def switch_vowels(word):
 			word[index] = lookup[letter][rand_index]
 	return ''.join(word)
 
-# def test_spell_checker()
-# 	while True:
 def generate_garbage():
 	rand_word = dictionary[random.randint(0, len(dictionary)-1)].strip()
-	print rand_word
 	return capitalize_letters(duplicate_letters(switch_vowels(rand_word)))
+
+
+for i in range(int(iterations)):
+	print generate_garbage()
