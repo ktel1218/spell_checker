@@ -13,4 +13,5 @@ Use spell_ruiner.py to generate some number of incorrectly spelled words into a 
 example:
 
   $ python spell_ruiner.py 50 > test.txt
+  
   $ python spell_checker text.txt
