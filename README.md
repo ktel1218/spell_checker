@@ -3,6 +3,7 @@ SPELL CHECKER
 =============
 
 to type in a word to check, run
+
   $ python spell_checker
 
 *OR*
